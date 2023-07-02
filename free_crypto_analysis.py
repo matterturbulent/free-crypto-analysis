@@ -60,7 +60,9 @@ try:
 except ValueError:
     print("\nError: You must input an integer.")
     sys.exit(1)
-    
+
+historical_period = historical_period + 1 
+
 # Input integer representing the user's investment duration
 investment_duration = input("""
 
@@ -114,12 +116,11 @@ _________________________________
 
 # Basic Financial Statistics
 
-selected=list(dataframe.columns[0:])
-returns_daily = dataframe[selected].pct_change()
+returns = interval_data.pct_change()
 
-expected_returns = returns_daily.mean().mul(100).round(3).astype(str) + "%"
+expected_returns = returns.mean().mul(100).round(3).astype(str) + "%"
 
-cov_daily = returns_daily.cov()
+cov_daily = returns.dropna().cov()
 
 single_asset_std = np.sqrt(np.diagonal(cov_daily))
 single_asset_std = pd.Series(single_asset_std, index=user_token_list).mul(100).round(3).astype(str) + "%" 
@@ -130,7 +131,7 @@ period, per the past {historical_period} days of market data:\n
 {expected_returns}\n\n""")
 
 print(f"""\033[1mStandard Deviation\033[0m\n
-Standard deviation of prices for the tokens, when holding these tokens 
+Standard deviation of returns for the tokens, when holding these tokens 
 over a {investment_duration}-day investment period, per the past {historical_period} days of market data:\n
 {single_asset_std}\n\nLarger number means the token is more volatile.\n\n""")
 
